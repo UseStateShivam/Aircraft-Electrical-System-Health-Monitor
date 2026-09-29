@@ -1,0 +1,144 @@
+# Aircraft Electrical System Health Monitor - Configuration
+# Representative educational simulation values for aircraft electrical-bus monitoring.
+# NOTE: Representative simulation parameters, NOT certified avionics specifications.
+
+seed: 42
+bus_type: "ac"  # Default bus mode: "ac" or "dc"
+sampling_rate_hz: 10.0
+duration_seconds: 600.0  # 10 minutes -> 6000 samples at 10 Hz
+
+# Electrical Bus Parameters
+ac_bus:
+  nominal_voltage: 115.0       # V RMS
+  nominal_frequency: 400.0     # Hz
+  voltage_noise_std: 0.7       # V RMS noise
+  frequency_noise_std: 0.25    # Hz noise
+  base_current: 20.0           # Amperes (at load_level 1.0)
+  current_noise_std: 0.35      # Amperes noise
+  power_factor: 0.92
+
+dc_bus:
+  nominal_voltage: 28.0        # V DC
+  voltage_noise_std: 0.22      # V noise
+  base_current: 50.0           # Amperes (at load_level 1.0)
+  current_noise_std: 0.60      # Amperes noise
+
+# Operating Condition Profiles
+operating_conditions:
+  conditions:
+    - name: "low_load"
+      load_multiplier: 0.35
+      voltage_droop_factor: 0.002
+      duration_range: [40, 80]
+    - name: "normal_load"
+      load_multiplier: 0.65
+      voltage_droop_factor: 0.006
+      duration_range: [60, 120]
+    - name: "high_load"
+      load_multiplier: 0.95
+      voltage_droop_factor: 0.015
+      duration_range: [40, 90]
+    - name: "transient_load"
+      load_multiplier: 1.15
+      voltage_droop_factor: 0.025
+      duration_range: [5, 15]
+
+# Noise level multipliers for simulation scenarios
+noise_scenarios:
+  low_noise: 0.5
+  normal_noise: 1.0
+  high_noise: 2.0
+
+# Engineering Thresholds
+thresholds:
+  ac:
+    voltage_critical_low: 100.0   # V RMS
+    voltage_warning_low: 108.0    # V RMS
+    voltage_warning_high: 122.0   # V RMS
+    voltage_critical_high: 130.0  # V RMS
+    current_warning_high: 28.0    # Amperes
+    current_critical_high: 35.0   # Amperes
+    frequency_critical_low: 385.0 # Hz
+    frequency_warning_low: 395.0  # Hz
+    frequency_warning_high: 405.0 # Hz
+    frequency_critical_high: 415.0  # Hz
+  dc:
+    voltage_critical_low: 22.0    # V
+    voltage_warning_low: 25.0     # V
+    voltage_warning_high: 30.0    # V
+    voltage_critical_high: 32.5   # V
+    current_warning_high: 70.0    # Amperes
+    current_critical_high: 90.0   # Amperes
+
+# Fault Injection Settings
+fault_injection:
+  enabled: true
+  num_faults: 10
+  seed: 42
+  supported_faults:
+    - "overvoltage"
+    - "undervoltage"
+    - "overcurrent"
+    - "frequency_deviation"  # skipped automatically for DC
+    - "voltage_spike"
+    - "voltage_sag"
+    - "current_spike"
+    - "sensor_dropout"
+    - "sensor_drift"
+    - "combined_fault"
+  severity_factors:
+    mild: 1.10
+    moderate: 1.25
+    severe: 1.45
+
+# Feature Engineering
+features:
+  rolling_windows: [5, 20]  # Rolling window lengths (samples)
+  compute_rates: true
+  compute_deviations: true
+
+# Machine Learning: Isolation Forest
+isolation_forest:
+  n_estimators: 150
+  contamination: 0.05
+  max_samples: "auto"
+  random_state: 42
+  features_to_use:
+    ac:
+      - "voltage"
+      - "current"
+      - "frequency"
+      - "voltage_deviation"
+      - "frequency_deviation"
+      - "voltage_rate"
+      - "current_rate"
+      - "rolling_voltage_mean"
+      - "rolling_voltage_std"
+      - "apparent_power"
+    dc:
+      - "voltage"
+      - "current"
+      - "voltage_deviation"
+      - "voltage_rate"
+      - "current_rate"
+      - "rolling_voltage_mean"
+      - "rolling_voltage_std"
+      - "apparent_power"
+
+# Health Scoring (transparent deduction logic)
+health_score:
+  initial_score: 100.0
+  penalties:
+    sensor_fault: 40.0
+    threshold_critical: 35.0
+    threshold_warning: 12.0
+    ml_anomaly: 15.0
+  decay_factor: 0.95  # Exponential smoothing for persistent status
+
+# Output Paths
+paths:
+  raw_data: "data/raw/"
+  processed_data: "data/processed/"
+  figures: "outputs/figures/"
+  reports: "outputs/reports/"
+  metrics: "outputs/metrics/"

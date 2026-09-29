@@ -1,0 +1,11 @@
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Generating 3000 samples for AC bus (300.0s @ 10.0Hz, noise='normal_noise')
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Fitted standard scaler on training features: ['voltage', 'current', 'frequency', 'voltage_deviation', 'frequency_deviation', 'voltage_rate', 'current_rate', 'rolling_voltage_mean', 'rolling_voltage_std', 'apparent_power']
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Fitting Isolation Forest on 3000 baseline normal samples using 10 features (n_estimators=150, contamination=0.05).
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Generating 6000 samples for AC bus (600.0s @ 10.0Hz, noise='normal_noise')
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Successfully injected 10 fault events into AC dataset.
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Threshold monitor completed for AC: 576/6000 samples violated thresholds.
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Isolation Forest inference complete: 782/6000 observations flagged as anomalies.
+2026-09-29 20:59:27 [INFO] aircraft_health_monitor: Integrated health assessment completed. Anomalous samples: 874/6000. Alerts logged: 874.
+2026-09-29 20:59:28 [INFO] aircraft_health_monitor: Saved 874 alerts to outputs\reports\alerts.csv and outputs\reports\alerts.json
+2026-09-29 20:59:28 [INFO] aircraft_health_monitor: Saved evaluation metrics to outputs\metrics\evaluation_metrics.csv and outputs\metrics\fault_detection_metrics.csv
+2026-09-29 20:59:28 [INFO] aircraft_health_monitor: Generated comprehensive health summary report at outputs\reports\health_summary.txt

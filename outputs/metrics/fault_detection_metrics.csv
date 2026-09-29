@@ -1,0 +1,12 @@
+fault_type,samples,detected,missed,detection_rate
+combined_fault,108,108,0,100.0
+current_spike,5,5,0,100.0
+frequency_deviation,142,142,0,100.0
+overcurrent,80,26,54,32.5
+overvoltage,111,111,0,100.0
+sensor_drift,310,35,275,11.29
+sensor_dropout,31,31,0,100.0
+undervoltage,166,166,0,100.0
+voltage_sag,7,7,0,100.0
+voltage_spike,6,6,0,100.0
+normal (false alarms),5034,237,4797,4.71

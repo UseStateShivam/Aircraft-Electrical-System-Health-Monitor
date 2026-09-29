@@ -1,0 +1,104 @@
+==============================================================================
+AIRCRAFT ELECTRICAL SYSTEM HEALTH MONITOR - SIMULATION EVALUATION REPORT
+==============================================================================
+DISCLAIMER: Educational simulation & condition-monitoring prototype using synthetic
+sensor telemetry. Not certified avionics software; not validated on real aircraft hardware.
+------------------------------------------------------------------------------
+Target Bus Mode:             AC
+Nominal Operating Baseline:   115.0 V RMS, 400.0 Hz AC
+Sampling Rate:                10.0 Hz
+Duration:                     600.0 s (6000 total samples)
+Random Reproducibility Seed:  42
+------------------------------------------------------------------------------
+1. DATASET COMPOSITION & CLASS BALANCE
+   Total Sensor Samples:      6,000
+   Normal Inlier Samples:     5,034 (83.90%)
+   Injected Fault Samples:    966 (16.10%)
+   Injected Fault Events:     10 discrete events
+
+   [CLASS IMBALANCE NOTE]
+   Because anomalies represent a minority class in operational aviation systems,
+   accuracy can be deceptively optimistic. High accuracy can be achieved even by
+   predicting 'normal' everywhere. Therefore, Precision, Recall, and F1 Score
+   are the primary metrics for engineering defensibility.
+------------------------------------------------------------------------------
+2. MODEL BENCHMARK COMPARISON
++-------------------------+------------+-------------+----------+------------+--------+
+| Method                  |   Accuracy |   Precision |   Recall |   F1 Score |    FPR |
++=========================+============+=============+==========+============+========+
+| Threshold Rules         |     0.935  |      1      |   0.5963 |     0.7471 | 0      |
++-------------------------+------------+-------------+----------+------------+--------+
+| Isolation Forest        |     0.8903 |      0.6969 |   0.5642 |     0.6236 | 0.0471 |
++-------------------------+------------+-------------+----------+------------+--------+
+| Combined Health Monitor |     0.9057 |      0.7288 |   0.6594 |     0.6924 | 0.0471 |
++-------------------------+------------+-------------+----------+------------+--------+
+
+   Key Insights:
+   - Threshold Rules detect large, out-of-envelope spikes with high precision,
+     but can miss subtle gradual drift or multivariate interactions within limits.
+   - Isolation Forest captures multivariate topology without labeled supervision,
+     providing early warning for compound anomalies.
+   - The Combined System fuses both layers for robust condition-based monitoring.
+------------------------------------------------------------------------------
+3. COMBINED HEALTH MONITOR PERFORMANCE (SAMPLE-LEVEL)
+   Accuracy:                  90.57%
+   Precision:                 72.88%
+   Recall:                    65.94%
+   F1 Score:                  69.24%
+   False Positive Rate (FPR): 4.71%
+
+   Confusion Matrix:
+     True Positives (TP):     637
+     True Negatives (TN):     4797
+     False Positives (FP):    237
+     False Negatives (FN):    329
+------------------------------------------------------------------------------
+4. FAULT-SPECIFIC DETECTION BREAKDOWN
++-----------------------+-----------+------------+----------+------------------+
+| fault_type            |   samples |   detected |   missed |   detection_rate |
++=======================+===========+============+==========+==================+
+| combined_fault        |       108 |        108 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| current_spike         |         5 |          5 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| frequency_deviation   |       142 |        142 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| overcurrent           |        80 |         26 |       54 |            32.5  |
++-----------------------+-----------+------------+----------+------------------+
+| overvoltage           |       111 |        111 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| sensor_drift          |       310 |         35 |      275 |            11.29 |
++-----------------------+-----------+------------+----------+------------------+
+| sensor_dropout        |        31 |         31 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| undervoltage          |       166 |        166 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| voltage_sag           |         7 |          7 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| voltage_spike         |         6 |          6 |        0 |           100    |
++-----------------------+-----------+------------+----------+------------------+
+| normal (false alarms) |      5034 |        237 |     4797 |             4.71 |
++-----------------------+-----------+------------+----------+------------------+
+------------------------------------------------------------------------------
+5. EVENT-LEVEL DETECTION & LATENCY
+   Total Injected Events:     10
+   Detected Events:           10
+   Missed Events:             0
+   Event Detection Success:   100.00%
+   Mean Detection Latency:    0.360 seconds
+------------------------------------------------------------------------------
+6. CONDITION MONITORING ALERTS LOG SUMMARY
+   Sensor Telemetry Faults:   31 samples
+   Critical Alerts:           540 samples
+   Warning Alerts:            5 samples
+   Degraded (ML Early Alert): 298 samples
+------------------------------------------------------------------------------
+7. MEASURED RESUME-READY BULLETS (FACTUAL BASED ON ACTUAL RUN)
+   * Built a Python-based aircraft electrical-bus health monitoring prototype
+     simulating AC (115V AC 400Hz) operational telemetry across 6,000 synthetic sensor samples.
+   * Integrated dual-layer detection fusing engineering threshold rules with an
+     unsupervised Isolation Forest model, achieving 69.2% F1-score
+     and 100.0% event detection rate across 10 controlled fault modes.
+   * Implemented automated condition-based alerting, sensor dropout isolation, and
+     diagnostic latency tracking with an average detection delay of 0.36s.
+==============================================================================
